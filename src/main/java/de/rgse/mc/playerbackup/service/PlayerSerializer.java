@@ -3,7 +3,6 @@ package de.rgse.mc.playerbackup.service;
 import de.rgse.mc.playerbackup.exceptions.FileReadException;
 import de.rgse.mc.playerbackup.exceptions.FileWriteException;
 import de.rgse.mc.playerbackup.exceptions.NoBackupFoundException;
-import de.rgse.mc.playerbackup.model.PersistentPlayer;
 import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
@@ -31,8 +30,14 @@ public class PlayerSerializer {
         return FileHandler.instance().getBackupTimeStamps(player.getUUID().toString());
     }
 
-    public void serialize(PersistentPlayer player) throws FileWriteException {
-        FileHandler.instance().writeFile(player.getUuid(), player.getPlayer());
+    public void serialize(ServerPlayerEntity player) throws FileWriteException {
+        String uuid = player.getStringUUID();
+
+        CompoundNBT tag = new CompoundNBT();
+        player.save(tag);
+        player.addAdditionalSaveData(tag);
+
+        FileHandler.instance().writeFile(uuid, tag);
     }
 
     public CompoundNBT deserialize(ServerPlayerEntity player, String backupDate) throws FileReadException {

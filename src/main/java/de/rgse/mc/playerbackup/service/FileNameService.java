@@ -1,11 +1,11 @@
-package de.rgse.mc.playerbackup.model;
+package de.rgse.mc.playerbackup.service;
 
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class FileNameWrapper {
+public class FileNameService {
 
     public static final String TIMESTAMP_PATTERN = "yy_MM_dd_kkmmss";
 
@@ -16,7 +16,7 @@ public class FileNameWrapper {
     private final String root;
     private final String extension;
 
-    public FileNameWrapper(String root, String extension) {
+    public FileNameService(String root, String extension) {
         this.root = root;
         this.extension = extension.charAt(0) == '.' ? extension.substring(1) : extension;
     }

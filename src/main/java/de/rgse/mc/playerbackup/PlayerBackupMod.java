@@ -3,7 +3,7 @@ package de.rgse.mc.playerbackup;
 import de.rgse.mc.playerbackup.commands.CommandRegister;
 import de.rgse.mc.playerbackup.network.PlayerBackupPacketHandler;
 import de.rgse.mc.playerbackup.service.FileHandler;
-import de.rgse.mc.playerbackup.service.PlayerBackupConfig;
+import de.rgse.mc.playerbackup.config.PlayerBackupConfig;
 import de.rgse.mc.playerbackup.sound.SoundList;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.SubscribeEvent;

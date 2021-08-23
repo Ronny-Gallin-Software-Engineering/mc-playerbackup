@@ -1,4 +1,4 @@
-package de.rgse.mc.playerbackup.service;
+package de.rgse.mc.playerbackup.config;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -21,7 +21,7 @@ public class PlayerBackupConfig {
     private static final Gson GSON = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().setPrettyPrinting().create();
 
     private static PlayerBackupConfig instance;
-    protected static String root = "config/playerbackup.json";
+    protected static final String ROOT = "config/playerbackup.json";
 
     @Expose
     int backupCountPerPlayer;
@@ -43,6 +43,10 @@ public class PlayerBackupConfig {
         return deleteOnRestore;
     }
 
+    public int getBackupCountPerPlayer() {
+        return backupCountPerPlayer;
+    }
+
     public static PlayerBackupConfig instance() {
         if (null == instance) {
             instance = readConfig();
@@ -53,7 +57,7 @@ public class PlayerBackupConfig {
 
     private static PlayerBackupConfig readConfig() {
         try {
-            PlayerBackupConfig playerBackupConfig = GSON.fromJson(new FileReader(root), PlayerBackupConfig.class);
+            PlayerBackupConfig playerBackupConfig = GSON.fromJson(new FileReader(ROOT), PlayerBackupConfig.class);
             playerBackupConfig.permissions.register();
             return playerBackupConfig;
 
@@ -62,7 +66,7 @@ public class PlayerBackupConfig {
                 LOGGER.info("unable to find config file. Writing new one");
                 writeConfig();
 
-                PlayerBackupConfig playerBackupConfig = GSON.fromJson(new FileReader(root), PlayerBackupConfig.class);
+                PlayerBackupConfig playerBackupConfig = GSON.fromJson(new FileReader(ROOT), PlayerBackupConfig.class);
                 playerBackupConfig.permissions.register();
                 return playerBackupConfig;
 
@@ -80,6 +84,6 @@ public class PlayerBackupConfig {
         playerBackupConfig.permissions = Permissions.createDefaultPermissions();
 
         String s = GSON.toJson(playerBackupConfig);
-        FileUtils.write(new File(root), s, StandardCharsets.UTF_8);
+        FileUtils.write(new File(ROOT), s, StandardCharsets.UTF_8);
     }
 }

@@ -1,11 +1,10 @@
 package de.rgse.mc.playerbackup.service;
 
 import de.rgse.mc.playerbackup.PlayerBackupMod;
+import de.rgse.mc.playerbackup.config.PlayerBackupConfig;
 import de.rgse.mc.playerbackup.exceptions.FileReadException;
 import de.rgse.mc.playerbackup.exceptions.FileWriteException;
 import de.rgse.mc.playerbackup.exceptions.NoBackupFoundException;
-import de.rgse.mc.playerbackup.model.FileNameWrapper;
-import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.server.MinecraftServer;
@@ -25,9 +24,9 @@ public class FileHandler {
     private static final Logger LOGGER = LogManager.getLogger();
 
     private static FileHandler instance;
-    private static FileNameWrapper fileNameWrapper;
+    private static FileNameService fileNameWrapper;
 
-    public static FileHandler instance() {
+    static FileHandler instance() {
         if (instance == null) {
             instance = new FileHandler();
         }
@@ -46,7 +45,7 @@ public class FileHandler {
             root = "saves/" + root;
         }
 
-        fileNameWrapper = new FileNameWrapper(root, ".dat");
+        fileNameWrapper = new FileNameService(root, ".dat");
 
         LOGGER.info("playerbackup directory set to {}", root);
         boolean mkdirs = new File(root).mkdirs();
@@ -56,7 +55,7 @@ public class FileHandler {
         }
     }
 
-    public void writeFile(String uuid, CompoundNBT data) throws FileWriteException {
+    void writeFile(String uuid, CompoundNBT data) throws FileWriteException {
 
         String name = fileNameWrapper.get(uuid);
 
@@ -71,13 +70,13 @@ public class FileHandler {
         }
     }
 
-    public List<String> getBackupTimeStamps(String uuid) {
+    List<String> getBackupTimeStamps(String uuid) {
         String[] list = new File(fileNameWrapper.getRoot()).list((dist, name) -> name.startsWith(uuid));
         return list != null ? Arrays.stream(list).map(fileNameWrapper::getTimestamp).collect(Collectors.toList()) : Collections.emptyList();
     }
 
     private void clear(String uuid) throws IOException {
-        int backupCountPerPlayer = PlayerBackupConfig.instance().backupCountPerPlayer;
+        int backupCountPerPlayer = PlayerBackupConfig.instance().getBackupCountPerPlayer();
 
         String[] list = new File(fileNameWrapper.getRoot()).list();
         List<String> files = list != null ? Arrays.stream(list).filter(name -> name.startsWith(uuid)).sorted().collect(Collectors.toList()) : Collections.emptyList();
@@ -95,7 +94,7 @@ public class FileHandler {
         list.remove(0);
     }
 
-    public CompoundNBT readFile(String uuid, String backupDate) throws FileReadException {
+    CompoundNBT readFile(String uuid, String backupDate) throws FileReadException {
         try {
             String fileName = fileNameWrapper.get(uuid, backupDate);
             return CompressedStreamTools.readCompressed(new File(fileName));
@@ -105,7 +104,7 @@ public class FileHandler {
         }
     }
 
-    public CompoundNBT readLatestFile(String uuid) throws NoBackupFoundException, FileReadException {
+    CompoundNBT readLatestFile(String uuid) throws NoBackupFoundException, FileReadException {
         List<String> backupFilesForUuid = getBackupTimeStamps(uuid);
         if (backupFilesForUuid.isEmpty()) {
             throw new NoBackupFoundException();
@@ -116,12 +115,12 @@ public class FileHandler {
         }
     }
 
-    public void delete(String uuid, String timestamp) throws IOException {
+    void delete(String uuid, String timestamp) throws IOException {
         String fileName = fileNameWrapper.get(uuid, timestamp);
         FileUtils.forceDelete(new File(fileName));
     }
 
-    public void deleteLatest(String uuid) throws IOException {
+    void deleteLatest(String uuid) throws IOException {
         List<String> backupFilesForUuid = getBackupTimeStamps(uuid);
 
         if (!backupFilesForUuid.isEmpty()) {
