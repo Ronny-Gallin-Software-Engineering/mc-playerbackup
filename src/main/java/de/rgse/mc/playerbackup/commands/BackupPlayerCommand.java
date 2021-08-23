@@ -5,6 +5,7 @@ import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import de.rgse.mc.playerbackup.commands.model.ArgumentedPlayerCommand;
 import de.rgse.mc.playerbackup.commands.model.ReflectivePlayerCommand;
+import de.rgse.mc.playerbackup.model.DefaultStyle;
 import de.rgse.mc.playerbackup.model.PersistentPlayer;
 import de.rgse.mc.playerbackup.network.PlayerBackupPacketHandler;
 import de.rgse.mc.playerbackup.service.PlayerBackupConfig;
@@ -14,10 +15,7 @@ import net.minecraft.command.Commands;
 import net.minecraft.command.arguments.EntityArgument;
 import net.minecraft.command.arguments.EntitySelector;
 import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextComponent;
-import net.minecraft.util.text.TextComponentUtils;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.util.text.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -53,8 +51,10 @@ public class BackupPlayerCommand {
                 PlayerBackupPacketHandler.sendFX(player);
 
                 TranslationTextComponent translationTextComponent = new TranslationTextComponent("msg.successfully_saved");
+                IFormattableTextComponent playerDisplayName = player.getDisplayName().copy();
+                playerDisplayName.getStyle().withColor(DefaultStyle.COLOR);
 
-                context.getSource().sendSuccess(new StringTextComponent("").append(player.getDisplayName()).append(new StringTextComponent(" successfully saved")), false);
+                context.getSource().sendSuccess(new StringTextComponent("").append(playerDisplayName).append(translationTextComponent), false);
 
                 return 0;
 

@@ -6,8 +6,11 @@ import com.mojang.brigadier.context.CommandContext;
 import de.rgse.mc.playerbackup.argumenttypes.BackupArgumentType;
 import de.rgse.mc.playerbackup.commands.model.ArgumentedPlayerCommand;
 import de.rgse.mc.playerbackup.commands.model.ReflectivePlayerCommand;
+import de.rgse.mc.playerbackup.exceptions.NoBackupFoundException;
+import de.rgse.mc.playerbackup.model.DefaultStyle;
 import de.rgse.mc.playerbackup.network.PlayerBackupPacketHandler;
 import de.rgse.mc.playerbackup.service.ArgumentService;
+import de.rgse.mc.playerbackup.service.FileHandler;
 import de.rgse.mc.playerbackup.service.PlayerBackupConfig;
 import de.rgse.mc.playerbackup.service.PlayerSerializer;
 import net.minecraft.command.CommandSource;
@@ -17,6 +20,7 @@ import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.particles.ParticleTypes;
 import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.util.text.IFormattableTextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import org.apache.logging.log4j.LogManager;
@@ -61,11 +65,28 @@ public class RestorePlayerCommand {
 
                 PlayerBackupPacketHandler.send(player);
 
+                if (PlayerBackupConfig.instance().isDeleteOnRestore()) {
+                    if (backup.isPresent()) {
+                        FileHandler.instance().delete(player.getStringUUID(), backup.get());
+
+                    } else {
+                        FileHandler.instance().deleteLatest(player.getStringUUID());
+                    }
+                }
+
+                IFormattableTextComponent playerDisplayName = player.getDisplayName().copy();
+                playerDisplayName.getStyle().withColor(DefaultStyle.COLOR);
                 TranslationTextComponent translationTextComponent = new TranslationTextComponent("msg.successfully_restored");
 
-                context.getSource().sendSuccess(new StringTextComponent("").append(player.getDisplayName()).append(translationTextComponent), false);
+                context.getSource().sendSuccess(new StringTextComponent("").append(playerDisplayName).append(translationTextComponent), false);
 
                 return 0;
+
+            } catch (NoBackupFoundException exception) {
+                String command = "playerbackup backup " + player.getScoreboardName();
+                TranslationTextComponent translationTextComponent = new TranslationTextComponent("msg.no_backup_yet", command);
+                context.getSource().sendFailure(translationTextComponent);
+                return -1;
 
             } catch (Exception exception) {
                 LOGGER.error("error executing command", exception);

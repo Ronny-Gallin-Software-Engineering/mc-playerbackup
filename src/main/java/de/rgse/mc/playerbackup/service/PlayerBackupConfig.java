@@ -27,6 +27,9 @@ public class PlayerBackupConfig {
     int backupCountPerPlayer;
 
     @Expose
+    boolean deleteOnRestore;
+
+    @Expose
     Permissions permissions;
 
     private PlayerBackupConfig() {
@@ -34,6 +37,10 @@ public class PlayerBackupConfig {
 
     public Permissions getPermissions() {
         return permissions;
+    }
+
+    public boolean isDeleteOnRestore() {
+        return deleteOnRestore;
     }
 
     public static PlayerBackupConfig instance() {
@@ -69,6 +76,7 @@ public class PlayerBackupConfig {
     private static void writeConfig() throws IOException {
         PlayerBackupConfig playerBackupConfig = new PlayerBackupConfig();
         playerBackupConfig.backupCountPerPlayer = 5;
+        playerBackupConfig.deleteOnRestore = true;
         playerBackupConfig.permissions = Permissions.createDefaultPermissions();
 
         String s = GSON.toJson(playerBackupConfig);

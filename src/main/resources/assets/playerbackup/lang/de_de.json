@@ -1,5 +1,6 @@
 {
   "sound.restored.sub": "Spieler wiederhergestellt",
   "msg.successfully_saved": " gesichert",
-  "msg.successfully_restored": " wiederhergestellt"
+  "msg.successfully_restored": " wiederhergestellt",
+  "msg.no_backup_yet": "Es gibt noch kein Backup. Benutzer \"%s\" um eine neues anzulegen"
 }

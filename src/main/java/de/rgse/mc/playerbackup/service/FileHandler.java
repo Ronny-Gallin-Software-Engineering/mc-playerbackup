@@ -5,6 +5,7 @@ import de.rgse.mc.playerbackup.exceptions.FileReadException;
 import de.rgse.mc.playerbackup.exceptions.FileWriteException;
 import de.rgse.mc.playerbackup.exceptions.NoBackupFoundException;
 import de.rgse.mc.playerbackup.model.FileNameWrapper;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.server.MinecraftServer;
@@ -50,7 +51,7 @@ public class FileHandler {
         LOGGER.info("playerbackup directory set to {}", root);
         boolean mkdirs = new File(root).mkdirs();
 
-        if(mkdirs) {
+        if (mkdirs) {
             LOGGER.warn("{} culd not be created", new File(root).getAbsolutePath());
         }
     }
@@ -112,6 +113,20 @@ public class FileHandler {
         } else {
             String timestamp = backupFilesForUuid.get(backupFilesForUuid.size() - 1);
             return readFile(uuid, timestamp);
+        }
+    }
+
+    public void delete(String uuid, String timestamp) throws IOException {
+        String fileName = fileNameWrapper.get(uuid, timestamp);
+        FileUtils.forceDelete(new File(fileName));
+    }
+
+    public void deleteLatest(String uuid) throws IOException {
+        List<String> backupFilesForUuid = getBackupTimeStamps(uuid);
+
+        if (!backupFilesForUuid.isEmpty()) {
+            String timestamp = backupFilesForUuid.get(backupFilesForUuid.size() - 1);
+            delete(uuid, timestamp);
         }
     }
 }

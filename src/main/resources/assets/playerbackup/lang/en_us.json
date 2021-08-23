@@ -1,5 +1,6 @@
 {
   "sound.restored.sub": "Player restored",
   "msg.successfully_saved": " saved",
-  "msg.successfully_restored": " restored"
+  "msg.successfully_restored": " restored",
+  "msg.no_backup_yet": "There is not yet a backup. Use \"%s\" to create a new one"
 }
