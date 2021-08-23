@@ -22,10 +22,7 @@ public class PlayerBackupMod {
     private static final Logger LOGGER = LogManager.getLogger();
 
     public PlayerBackupMod() {
-        // Register the setup method for modloading
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
-
-        // Register ourselves for server and other game events we are interested in
         MinecraftForge.EVENT_BUS.register(this);
         SoundList.SOUNDS.register(FMLJavaModLoadingContext.get().getModEventBus());
     }
@@ -36,7 +33,6 @@ public class PlayerBackupMod {
         LOGGER.info("{} successfully initialized", PlayerBackupPacketHandler.class.getSimpleName());
     }
 
-    // You can use SubscribeEvent and let the Event Bus discover methods to call
     @SubscribeEvent
     public void onServerStarting(FMLServerStartingEvent event) {
         FileHandler.init(event.getServer());

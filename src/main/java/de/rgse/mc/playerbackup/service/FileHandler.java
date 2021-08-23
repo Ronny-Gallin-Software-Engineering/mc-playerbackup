@@ -75,25 +75,6 @@ public class FileHandler {
         return list != null ? Arrays.stream(list).map(fileNameWrapper::getTimestamp).collect(Collectors.toList()) : Collections.emptyList();
     }
 
-    private void clear(String uuid) throws IOException {
-        int backupCountPerPlayer = PlayerBackupConfig.instance().getBackupCountPerPlayer();
-
-        String[] list = new File(fileNameWrapper.getRoot()).list();
-        List<String> files = list != null ? Arrays.stream(list).filter(name -> name.startsWith(uuid)).sorted().collect(Collectors.toList()) : Collections.emptyList();
-
-        while (files.size() >= backupCountPerPlayer) {
-            LOGGER.info("maximum of {} backups for player {} reached. Deleting oldest", backupCountPerPlayer, uuid);
-            deleteOldest(files);
-        }
-    }
-
-    private void deleteOldest(List<String> list) throws IOException {
-        File file = new File(fileNameWrapper.getRoot() + list.get(0));
-        LOGGER.debug("Deleting file {}", file.getAbsolutePath());
-        FileUtils.forceDelete(file);
-        list.remove(0);
-    }
-
     CompoundNBT readFile(String uuid, String backupDate) throws FileReadException {
         try {
             String fileName = fileNameWrapper.get(uuid, backupDate);
@@ -127,5 +108,26 @@ public class FileHandler {
             String timestamp = backupFilesForUuid.get(backupFilesForUuid.size() - 1);
             delete(uuid, timestamp);
         }
+    }
+
+    private void clear(String uuid) throws IOException {
+        int backupCountPerPlayer = PlayerBackupConfig.instance().getBackupCountPerPlayer();
+
+        String[] list = new File(fileNameWrapper.getRoot()).list();
+        List<String> files = list != null ? Arrays.stream(list).filter(name -> name.startsWith(uuid)).sorted().collect(Collectors.toList()) : Collections.emptyList();
+
+        if(backupCountPerPlayer > 0) {
+            while (files.size() >= backupCountPerPlayer) {
+                LOGGER.info("maximum of {} backups for player {} reached. Deleting oldest", backupCountPerPlayer, uuid);
+                deleteOldest(files);
+            }
+        }
+    }
+
+    private void deleteOldest(List<String> list) throws IOException {
+        File file = new File(fileNameWrapper.getRoot() + list.get(0));
+        LOGGER.debug("Deleting file {}", file.getAbsolutePath());
+        FileUtils.forceDelete(file);
+        list.remove(0);
     }
 }

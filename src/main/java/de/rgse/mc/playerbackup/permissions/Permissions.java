@@ -1,4 +1,4 @@
-package de.rgse.mc.playerbackup.model;
+package de.rgse.mc.playerbackup.permissions;
 
 import com.google.gson.annotations.Expose;
 import de.rgse.mc.playerbackup.PlayerBackupMod;
