@@ -1,0 +1,16 @@
+{
+  "restored": {
+    "category": "player",
+    "subtitle": "sound.restored.sub",
+    "sounds": [
+      {
+        "name": "playerbackup:player/restored_1",
+        "stream": true
+      },
+      {
+        "name": "playerbackup:player/restored_2",
+        "stream": true
+      }
+    ]
+  }
+}

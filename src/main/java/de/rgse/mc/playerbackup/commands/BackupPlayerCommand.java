@@ -1,59 +1,60 @@
 package de.rgse.mc.playerbackup.commands;
 
-import com.mojang.brigadier.Command;
-import com.mojang.brigadier.CommandDispatcher;
-import com.mojang.brigadier.builder.ArgumentBuilder;
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import de.rgse.mc.playerbackup.PlayerBackupMod;
-import de.rgse.mc.playerbackup.exceptions.NoPlayerSelectedException;
+import de.rgse.mc.playerbackup.commands.model.ArgumentedPlayerCommand;
+import de.rgse.mc.playerbackup.commands.model.ReflectivePlayerCommand;
 import de.rgse.mc.playerbackup.model.PersistentPlayer;
-import de.rgse.mc.playerbackup.service.PlayerArgumentService;
+import de.rgse.mc.playerbackup.network.PlayerBackupPacketHandler;
+import de.rgse.mc.playerbackup.service.PlayerBackupConfig;
 import de.rgse.mc.playerbackup.service.PlayerSerializer;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.Commands;
 import net.minecraft.command.arguments.EntityArgument;
+import net.minecraft.command.arguments.EntitySelector;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TextComponent;
+import net.minecraft.util.text.TextComponentUtils;
+import net.minecraft.util.text.TranslationTextComponent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.function.BiFunction;
 
-import static de.rgse.mc.playerbackup.service.PlayerArgumentService.ARGUMENT_NAME;
+import static de.rgse.mc.playerbackup.service.ArgumentService.PLAYER_ARGUMENT_NAME;
 
 public class BackupPlayerCommand {
 
     private static final Logger LOGGER = LogManager.getLogger();
 
-    public static ArgumentBuilder<CommandSource, ?> register(CommandDispatcher<CommandSource> dispatcher) {
+    private BackupPlayerCommand() {
+    }
+
+    public static LiteralArgumentBuilder<CommandSource> register() {
         return Commands.literal("backup")
-                .requires(commandSource -> commandSource.hasPermission(0))
-                .then(registerSubCommand(dispatcher))
-                .executes(new ReflectiveBackupPlayerCommand());
+                .requires(PlayerBackupConfig.instance().getPermissions().getSelfBackup()::permitted)
+                .then(registerSubCommand())
+                .executes(new ReflectivePlayerCommand(onRun()));
     }
 
-    private static ArgumentBuilder<CommandSource, ?> registerSubCommand(CommandDispatcher<CommandSource> dispatcher) {
-        return Commands.argument(ARGUMENT_NAME, EntityArgument.player())
-                .executes(new ArgumentedBackupPlayerCommand());
+    private static RequiredArgumentBuilder<CommandSource, EntitySelector> registerSubCommand() {
+        return Commands.argument(PLAYER_ARGUMENT_NAME, EntityArgument.player())
+                .requires(PlayerBackupConfig.instance().getPermissions().getBackup()::permitted)
+                .executes(new ArgumentedPlayerCommand(onRun()));
     }
 
-    private static abstract class AbstractBackupPlayerCommand implements Command<CommandSource> {
-
-        abstract List<ServerPlayerEntity> getPlayers(CommandContext<CommandSource> context) throws NoPlayerSelectedException, CommandSyntaxException;
-
-        @Override
-        public int run(CommandContext<CommandSource> context) throws CommandSyntaxException {
-
+    private static BiFunction<CommandContext<CommandSource>, ServerPlayerEntity, Integer> onRun() {
+        return (context, player) -> {
             try {
-                List<ServerPlayerEntity> players = getPlayers(context);
-                context.getSource().sendSuccess(new StringTextComponent("Backup started"), false);
+                PersistentPlayer persistentPlayer = new PersistentPlayer(player);
+                PlayerSerializer.instance().serialize(persistentPlayer);
+                PlayerBackupPacketHandler.sendFX(player);
 
-                List<PersistentPlayer> persistentPlayers = players.stream().map(PersistentPlayer::new).collect(Collectors.toList());
-                PlayerSerializer.serialize(persistentPlayers);
-                context.getSource().sendSuccess(new StringTextComponent("Backup successful"), true);
+                TranslationTextComponent translationTextComponent = new TranslationTextComponent("msg.successfully_saved");
+
+                context.getSource().sendSuccess(new StringTextComponent("").append(player.getDisplayName()).append(new StringTextComponent(" successfully saved")), false);
 
                 return 0;
 
@@ -62,22 +63,6 @@ public class BackupPlayerCommand {
                 context.getSource().sendFailure(new StringTextComponent(exception.getMessage()));
                 return -1;
             }
-        }
-
-    }
-
-    private static class ArgumentedBackupPlayerCommand extends AbstractBackupPlayerCommand {
-        List<ServerPlayerEntity> getPlayers(CommandContext<CommandSource> context) throws NoPlayerSelectedException, CommandSyntaxException {
-            return PlayerArgumentService.getPlayers(context);
-        }
-    }
-
-    private static class ReflectiveBackupPlayerCommand extends AbstractBackupPlayerCommand {
-        List<ServerPlayerEntity> getPlayers(CommandContext<CommandSource> context) throws NoPlayerSelectedException, CommandSyntaxException {
-            if (context.getSource().getEntity() instanceof ServerPlayerEntity) {
-                return Collections.singletonList((ServerPlayerEntity) context.getSource().getEntity());
-            }
-            return Collections.emptyList();
-        }
+        };
     }
 }
