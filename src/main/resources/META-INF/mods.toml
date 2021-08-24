@@ -27,7 +27,7 @@ displayName="Player Backup" #mandatory
 # A URL for the "homepage" for this mod, displayed in the mod UI
 #displayURL="https://change.me.to.your.mods.homepage.example.invalid/" #optional
 # A file name (in the root of the mod JAR) containing a logo for display
-logoFile="playerbackup.png" #optional
+logoFile="playerbackup_250.png" #optional
 # A text field displayed in the mod UI
 authors="Ronny Gallin Software Engineering" #optional
 # The description text for the mod (multi line!) (#mandatory)

@@ -1,4 +1,4 @@
-![Mod Logo](src/main/resources/playerbackup.png)
+![Mod Logo](src/main/resources/playerbackup_250.png)
 
 # Player Backup
 
