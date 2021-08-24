@@ -1,8 +1,8 @@
 package de.rgse.mc.playerbackup.network;
 
 import de.rgse.mc.playerbackup.PlayerBackupMod;
-import de.rgse.mc.playerbackup.network.message.RestorePlayerMessage;
 import de.rgse.mc.playerbackup.network.message.PlayerBackupSFXMessage;
+import de.rgse.mc.playerbackup.network.message.RestorePlayerMessage;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
@@ -10,10 +10,9 @@ import net.minecraftforge.fml.network.NetworkRegistry;
 import net.minecraftforge.fml.network.PacketDistributor;
 import net.minecraftforge.fml.network.simple.SimpleChannel;
 
-import java.util.Random;
-
 public class PlayerBackupPacketHandler {
 
+    private static int messageId = 4876;
     private static final String PROTOCOL_VERSION = "1.0.0";
 
     private PlayerBackupPacketHandler() {
@@ -25,8 +24,6 @@ public class PlayerBackupPacketHandler {
             PROTOCOL_VERSION::equals,
             PROTOCOL_VERSION::equals
     );
-
-    private static int messageId = new Random().nextInt();
 
     public static void init() {
         INSTANCE.registerMessage(messageId++, RestorePlayerMessage.class, RestorePlayerMessage::encode, RestorePlayerMessage::decode, RestorePlayerMessage::handle);
