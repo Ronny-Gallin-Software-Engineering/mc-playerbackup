@@ -1,3 +1,5 @@
+![Mod Logo](src/main/resources/playerbackup.png)
+
 # Player Backup
 
 ## TL;DR
@@ -78,6 +80,7 @@ This Mod was testest with the following versions:
 | Minecraft | Forge |
 | --- | --- |
 | 1.16.5 | 36.1.31 |
+| 1.16.5 | 36.2.2 |
 
 ## Disclaimer
 Even though I tested the mod eagerly I cannot guarantee for a bugless behavior. I will not take responsibiliy if any data is lost or destroyed.

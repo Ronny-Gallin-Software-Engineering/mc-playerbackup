@@ -7,7 +7,7 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
-import de.rgse.mc.playerbackup.service.PlayerSerializer;
+import de.rgse.mc.playerbackup.service.ServerPlayerSerializer;
 import net.minecraft.command.ISuggestionProvider;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraftforge.fml.server.ServerLifecycleHooks;
@@ -36,7 +36,7 @@ public class BackupArgumentType implements ArgumentType<String> {
 
         ServerPlayerEntity playerByName = ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayerByName(userName);
         if (playerByName != null) {
-            suggestions = PlayerSerializer.instance().getBackupsForPlayer(playerByName);
+            suggestions = ServerPlayerSerializer.instance().getBackupsForPlayer(playerByName);
         }
 
         return ISuggestionProvider.suggest(suggestions, builder);

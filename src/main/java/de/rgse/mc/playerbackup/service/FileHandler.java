@@ -8,6 +8,7 @@ import de.rgse.mc.playerbackup.exceptions.NoBackupFoundException;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.world.server.ServerWorld;
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -38,7 +39,8 @@ public class FileHandler {
     }
 
     public static void init(MinecraftServer server) {
-        String levelName = server.getWorldData().getLevelSettings().levelName();
+
+        String levelName = server.getWorldData().getLevelName();
 
         String root = String.format("%s/%s/", levelName, PlayerBackupMod.MOD_ID);
         if (server.isSingleplayer()) {
@@ -48,11 +50,7 @@ public class FileHandler {
         fileNameWrapper = new FileNameService(root, ".dat");
 
         LOGGER.info("playerbackup directory set to {}", root);
-        boolean mkdirs = new File(root).mkdirs();
-
-        if (mkdirs) {
-            LOGGER.warn("{} culd not be created", new File(root).getAbsolutePath());
-        }
+        new File(root).mkdirs();
     }
 
     void writeFile(String uuid, CompoundNBT data) throws FileWriteException {

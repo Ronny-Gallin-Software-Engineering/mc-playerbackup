@@ -32,10 +32,12 @@ public class BackupService {
 
     public int restorePlayer(CommandContext<CommandSource> context, ServerPlayerEntity player) {
         try {
-            Optional<String> backup = ArgumentService.instance().getBackup(context);
-            CompoundNBT compoundNBT = backup.isPresent() ? PlayerSerializer.instance().deserialize(player, backup.get()) : PlayerSerializer.instance().deserialize(player);
+            ServerPlayerSerializer playerSerializer = ServerPlayerSerializer.instance();
 
-            PlayerSerializer.instance().deserialize(player, compoundNBT);
+            Optional<String> backup = ArgumentService.instance().getBackup(context);
+            CompoundNBT compoundNBT = backup.isPresent() ? playerSerializer.deserialize(player, backup.get()) : playerSerializer.deserialize(player);
+
+            playerSerializer.deserialize(player, compoundNBT);
 
             PlayerBackupPacketHandler.send(player);
 
@@ -71,7 +73,7 @@ public class BackupService {
 
     public int backupPlayer(CommandContext<CommandSource> context, ServerPlayerEntity player) {
         try {
-            PlayerSerializer.instance().serialize(player);
+            ServerPlayerSerializer.instance().serialize(player);
             PlayerBackupPacketHandler.sendFX(player);
 
             TranslationTextComponent translationTextComponent = new TranslationTextComponent("msg.successfully_saved");
