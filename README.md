@@ -72,5 +72,15 @@ By setting the permission level you may choose the enable the commands to other 
 The backup data is store within th worlds directory: `<world folder>/playerbackup`. Each backup is stored in an own file. The file names follow this pattern:
 `<player uuid>-<timestamp>.dat`. The content is binary data.
 
+## QA
+This Mod was testest with the following versions:
+
+| Minecraft | Forge |
+| --- | --- |
+| 1.16.5 | 36.1.31 |
+
+## Disclaimer
+Even though I tested the mod eagerly I cannot guarantee for a bugless behavior. I will not take responsibiliy if any data is lost or destroyed.
+
 ## Questions and Inspiration
 Feel free to open up Github Tickets. Once in a while I will take a look at them. 
