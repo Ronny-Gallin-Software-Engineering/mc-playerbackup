@@ -3,8 +3,6 @@ package de.rgse.mc.playerbackup.network.message;
 import de.rgse.mc.playerbackup.network.client.ClientPlayerBackupPacketHandler;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.network.NetworkEvent;
 
 import java.util.function.Supplier;
@@ -32,7 +30,7 @@ public class RestorePlayerMessage {
 
     public static void handle(RestorePlayerMessage message, Supplier<NetworkEvent.Context> contextSupplier) {
         NetworkEvent.Context context = contextSupplier.get();
-        context.enqueueWork(() -> DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> ClientPlayerBackupPacketHandler.handleRestorePlayerMessage(message, contextSupplier)));
+        context.enqueueWork(() -> ClientPlayerBackupPacketHandler.handleRestorePlayerMessage(message));
         context.setPacketHandled(true);
     }
 }

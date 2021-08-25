@@ -2,6 +2,7 @@ package de.rgse.mc.playerbackup.argumenttypes;
 
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.arguments.ArgumentType;
+import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.Suggestions;
@@ -11,8 +12,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.network.play.NetworkPlayerInfo;
 import net.minecraft.command.ISuggestionProvider;
 
-import java.io.Serializable;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -21,13 +20,15 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-public class BackupArgumentType implements ArgumentType<String>, Serializable {
+public class BackupArgumentType implements ArgumentType<String> {
 
     private static final Pattern PATTERN = Pattern.compile("^.*(\\d{2}_\\d{2}_\\d{2}_\\d{6}).dat");
 
+    private final StringArgumentType delegate = StringArgumentType.word();
+
     @Override
     public String parse(StringReader reader) throws CommandSyntaxException {
-        return reader.readUnquotedString();
+        return delegate.parse(reader);
     }
 
     @Override
@@ -40,7 +41,7 @@ public class BackupArgumentType implements ArgumentType<String>, Serializable {
 
         List<String> suggestions = Collections.emptyList();
         if (playerInfo != null) {
-            suggestions = Backups.getBackups().stream()
+            suggestions = Backups.instance().getAvailableBackups().stream()
                     .filter(f -> f.startsWith(playerInfo.getProfile().getId().toString()))
                     .map(this::getTimestamp)
                     .collect(Collectors.toList());
@@ -51,7 +52,7 @@ public class BackupArgumentType implements ArgumentType<String>, Serializable {
 
     @Override
     public Collection<String> getExamples() {
-        return Arrays.asList("word", "words_with_underscores");
+        return delegate.getExamples();
     }
 
     private String getTimestamp(String filename) {

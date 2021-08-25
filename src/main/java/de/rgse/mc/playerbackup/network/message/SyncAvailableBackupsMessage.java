@@ -1,36 +1,45 @@
 package de.rgse.mc.playerbackup.network.message;
 
+import com.google.common.reflect.TypeToken;
+import com.google.gson.Gson;
 import de.rgse.mc.playerbackup.network.client.ClientPlayerBackupPacketHandler;
-import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.network.NetworkEvent;
 
+import java.lang.reflect.Type;
+import java.util.List;
 import java.util.function.Supplier;
 
-public class RestorePlayerMessage {
+public class SyncAvailableBackupsMessage {
 
-    private final CompoundNBT player;
+    private static final Type LIST_TYPE = new TypeToken<List<String>>() {
+    }.getType();
 
-    public RestorePlayerMessage(CompoundNBT player) {
-        this.player = player;
+    private static final Gson GSON = new Gson();
+    private final List<String> backups;
+
+    public SyncAvailableBackupsMessage(List<String> backups) {
+        this.backups = backups;
     }
 
-    public CompoundNBT getPlayer() {
-        return player;
+    public List<String> getBackups() {
+        return backups;
     }
 
-    public static void encode(RestorePlayerMessage message, PacketBuffer buffer) {
-        buffer.writeNbt(message.player);
+    public static void encode(SyncAvailableBackupsMessage message, PacketBuffer buffer) {
+        buffer.writeUtf(GSON.toJson(message.backups));
     }
 
-    public static RestorePlayerMessage decode(PacketBuffer buffer) {
-        CompoundNBT compoundNBT = buffer.readNbt();
-        return new RestorePlayerMessage(compoundNBT);
+    public static SyncAvailableBackupsMessage decode(PacketBuffer buffer) {
+        String json = buffer.readUtf();
+        return new SyncAvailableBackupsMessage(GSON.fromJson(json, LIST_TYPE));
     }
 
-    public static void handle(RestorePlayerMessage message, Supplier<NetworkEvent.Context> contextSupplier) {
+    public static void handle(SyncAvailableBackupsMessage message, Supplier<NetworkEvent.Context> contextSupplier) {
         NetworkEvent.Context context = contextSupplier.get();
-        context.enqueueWork(() -> ClientPlayerBackupPacketHandler.handleRestorePlayerMessage(message, contextSupplier));
+        context.enqueueWork(() -> DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> ClientPlayerBackupPacketHandler.handleSyncBackupsMessage(message)));
         context.setPacketHandled(true);
     }
 }

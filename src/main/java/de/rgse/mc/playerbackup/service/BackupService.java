@@ -4,16 +4,19 @@ import com.mojang.brigadier.context.CommandContext;
 import de.rgse.mc.playerbackup.config.PlayerBackupConfig;
 import de.rgse.mc.playerbackup.exceptions.NoBackupFoundException;
 import de.rgse.mc.playerbackup.model.DefaultStyle;
-import de.rgse.mc.playerbackup.network.PlayerBackupPacketHandler;
+import de.rgse.mc.playerbackup.network.PlayerBackupNetwork;
 import net.minecraft.command.CommandSource;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.text.IFormattableTextComponent;
 import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.Style;
 import net.minecraft.util.text.TranslationTextComponent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.List;
 import java.util.Optional;
 
 public class BackupService {
@@ -39,7 +42,9 @@ public class BackupService {
 
             playerSerializer.deserialize(player, compoundNBT);
 
-            PlayerBackupPacketHandler.send(player);
+            PlayerBackupNetwork.sendRestore(player);
+            PlayerBackupNetwork.sendFX(player);
+            PlayerBackupNetwork.sendSync();
 
             if (PlayerBackupConfig.instance().isDeleteOnRestore()) {
                 if (backup.isPresent()) {
@@ -50,8 +55,7 @@ public class BackupService {
                 }
             }
 
-            IFormattableTextComponent playerDisplayName = player.getDisplayName().copy();
-            playerDisplayName.getStyle().withColor(DefaultStyle.COLOR);
+            IFormattableTextComponent playerDisplayName = getDisplayName(player);
             TranslationTextComponent translationTextComponent = new TranslationTextComponent("msg.successfully_restored");
 
             context.getSource().sendSuccess(new StringTextComponent("").append(playerDisplayName).append(translationTextComponent), false);
@@ -74,11 +78,11 @@ public class BackupService {
     public int backupPlayer(CommandContext<CommandSource> context, ServerPlayerEntity player) {
         try {
             ServerPlayerSerializer.instance().serialize(player);
-            PlayerBackupPacketHandler.sendFX(player);
+            PlayerBackupNetwork.sendFX(player);
+            PlayerBackupNetwork.sendSync();
 
+            IFormattableTextComponent playerDisplayName = getDisplayName(player);
             TranslationTextComponent translationTextComponent = new TranslationTextComponent("msg.successfully_saved");
-            IFormattableTextComponent playerDisplayName = player.getDisplayName().copy();
-            playerDisplayName.getStyle().withColor(DefaultStyle.COLOR);
 
             context.getSource().sendSuccess(new StringTextComponent("").append(playerDisplayName).append(translationTextComponent), false);
 
@@ -89,5 +93,16 @@ public class BackupService {
             context.getSource().sendFailure(new StringTextComponent(exception.getMessage()));
             return -1;
         }
+    }
+
+    public List<String> getBackups() {
+        return FileHandler.instance().getBackups();
+    }
+
+    private IFormattableTextComponent getDisplayName(PlayerEntity player) {
+        IFormattableTextComponent playerDisplayName = player.getDisplayName().copy();
+        Style style = playerDisplayName.getStyle().withColor(DefaultStyle.COLOR);
+        playerDisplayName.setStyle(style);
+        return playerDisplayName;
     }
 }

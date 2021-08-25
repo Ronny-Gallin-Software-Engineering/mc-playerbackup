@@ -8,7 +8,6 @@ import de.rgse.mc.playerbackup.exceptions.NoBackupFoundException;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.world.server.ServerWorld;
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -68,9 +67,9 @@ public class FileHandler {
         }
     }
 
-    List<String> getBackupTimeStamps(String uuid) {
-        String[] list = new File(fileNameWrapper.getRoot()).list((dist, name) -> name.startsWith(uuid));
-        return list != null ? Arrays.stream(list).map(fileNameWrapper::getTimestamp).collect(Collectors.toList()) : Collections.emptyList();
+    List<String> getBackups() {
+        String[] list = new File(fileNameWrapper.getRoot()).list();
+        return list != null ? Arrays.stream(list).collect(Collectors.toList()) : Collections.emptyList();
     }
 
     CompoundNBT readFile(String uuid, String backupDate) throws FileReadException {
@@ -108,13 +107,18 @@ public class FileHandler {
         }
     }
 
+    private List<String> getBackupTimeStamps(String uuid) {
+        String[] list = new File(fileNameWrapper.getRoot()).list((dist, name) -> name.startsWith(uuid));
+        return list != null ? Arrays.stream(list).map(fileNameWrapper::getTimestamp).collect(Collectors.toList()) : Collections.emptyList();
+    }
+
     private void clear(String uuid) throws IOException {
         int backupCountPerPlayer = PlayerBackupConfig.instance().getBackupCountPerPlayer();
 
         String[] list = new File(fileNameWrapper.getRoot()).list();
         List<String> files = list != null ? Arrays.stream(list).filter(name -> name.startsWith(uuid)).sorted().collect(Collectors.toList()) : Collections.emptyList();
 
-        if(backupCountPerPlayer > 0) {
+        if (backupCountPerPlayer > 0) {
             while (files.size() >= backupCountPerPlayer) {
                 LOGGER.info("maximum of {} backups for player {} reached. Deleting oldest", backupCountPerPlayer, uuid);
                 deleteOldest(files);

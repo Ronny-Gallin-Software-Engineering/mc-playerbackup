@@ -6,8 +6,6 @@ import de.rgse.mc.playerbackup.exceptions.NoBackupFoundException;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 
-import java.util.List;
-
 public class ServerPlayerSerializer extends PlayerSerializer<ServerPlayerEntity> {
 
     private static ServerPlayerSerializer instance;
@@ -21,10 +19,6 @@ public class ServerPlayerSerializer extends PlayerSerializer<ServerPlayerEntity>
     }
 
     private ServerPlayerSerializer() {
-    }
-
-    public List<String> getBackupsForPlayer(ServerPlayerEntity player) {
-        return FileHandler.instance().getBackupTimeStamps(player.getUUID().toString());
     }
 
     public void serialize(ServerPlayerEntity player) throws FileWriteException {
