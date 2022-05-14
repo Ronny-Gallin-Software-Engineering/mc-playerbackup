@@ -1,19 +1,19 @@
 package de.rgse.mc.playerbackup.network.message;
 
 import de.rgse.mc.playerbackup.network.client.ClientPlayerBackupPacketHandler;
-import net.minecraft.network.PacketBuffer;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.DistExecutor;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraftforge.fmllegacy.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
 public class PlayerBackupSFXMessage {
 
-    public static void encode(PlayerBackupSFXMessage message, PacketBuffer buffer) {
+    public static void encode(PlayerBackupSFXMessage message, FriendlyByteBuf buffer) {
     }
 
-    public static PlayerBackupSFXMessage decode(PacketBuffer buffer) {
+    public static PlayerBackupSFXMessage decode(FriendlyByteBuf buffer) {
         return new PlayerBackupSFXMessage();
     }
 

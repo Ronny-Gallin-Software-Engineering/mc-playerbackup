@@ -5,14 +5,14 @@ import de.rgse.mc.playerbackup.config.PlayerBackupConfig;
 import de.rgse.mc.playerbackup.exceptions.NoBackupFoundException;
 import de.rgse.mc.playerbackup.model.DefaultStyle;
 import de.rgse.mc.playerbackup.network.PlayerBackupNetwork;
-import net.minecraft.command.CommandSource;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.text.IFormattableTextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.Style;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Player;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -33,12 +33,12 @@ public class BackupService {
         return instance;
     }
 
-    public int restorePlayer(CommandContext<CommandSource> context, ServerPlayerEntity player) {
+    public int restorePlayer(CommandContext<CommandSourceStack> context, ServerPlayer player) {
         try {
             ServerPlayerSerializer playerSerializer = ServerPlayerSerializer.instance();
 
             Optional<String> backup = ArgumentService.instance().getBackup(context);
-            CompoundNBT compoundNBT = backup.isPresent() ? playerSerializer.deserialize(player, backup.get()) : playerSerializer.deserialize(player);
+            CompoundTag compoundNBT = backup.isPresent() ? playerSerializer.deserialize(player, backup.get()) : playerSerializer.deserialize(player);
 
             playerSerializer.deserialize(player, compoundNBT);
 
@@ -55,42 +55,42 @@ public class BackupService {
                 }
             }
 
-            IFormattableTextComponent playerDisplayName = getDisplayName(player);
-            TranslationTextComponent translationTextComponent = new TranslationTextComponent("msg.successfully_restored");
+            MutableComponent playerDisplayName = getDisplayName(player);
+            TranslatableComponent translationTextComponent = new TranslatableComponent("msg.successfully_restored");
 
-            context.getSource().sendSuccess(new StringTextComponent("").append(playerDisplayName).append(translationTextComponent), false);
+            context.getSource().sendSuccess(new TextComponent("").append(playerDisplayName).append(translationTextComponent), false);
 
             return 0;
 
         } catch (NoBackupFoundException exception) {
             String command = "playerbackup backup " + player.getScoreboardName();
-            TranslationTextComponent translationTextComponent = new TranslationTextComponent("msg.no_backup_yet", command);
+            TranslatableComponent translationTextComponent = new TranslatableComponent("msg.no_backup_yet", command);
             context.getSource().sendFailure(translationTextComponent);
             return -1;
 
         } catch (Exception exception) {
             LOGGER.error("error executing command", exception);
-            context.getSource().sendFailure(new StringTextComponent(exception.getMessage()));
+            context.getSource().sendFailure(new TextComponent(exception.getMessage()));
             return -1;
         }
     }
 
-    public int backupPlayer(CommandContext<CommandSource> context, ServerPlayerEntity player) {
+    public int backupPlayer(CommandContext<CommandSourceStack> context, ServerPlayer player) {
         try {
             ServerPlayerSerializer.instance().serialize(player);
             PlayerBackupNetwork.sendFX(player);
             PlayerBackupNetwork.sendSync();
 
-            IFormattableTextComponent playerDisplayName = getDisplayName(player);
-            TranslationTextComponent translationTextComponent = new TranslationTextComponent("msg.successfully_saved");
+            MutableComponent playerDisplayName = getDisplayName(player);
+            TranslatableComponent translationTextComponent = new TranslatableComponent("msg.successfully_saved");
 
-            context.getSource().sendSuccess(new StringTextComponent("").append(playerDisplayName).append(translationTextComponent), false);
+            context.getSource().sendSuccess(new TextComponent("").append(playerDisplayName).append(translationTextComponent), false);
 
             return 0;
 
         } catch (Exception exception) {
             LOGGER.error("error executing command", exception);
-            context.getSource().sendFailure(new StringTextComponent(exception.getMessage()));
+            context.getSource().sendFailure(new TextComponent(exception.getMessage()));
             return -1;
         }
     }
@@ -99,8 +99,8 @@ public class BackupService {
         return FileHandler.instance().getBackups();
     }
 
-    private IFormattableTextComponent getDisplayName(PlayerEntity player) {
-        IFormattableTextComponent playerDisplayName = player.getDisplayName().copy();
+    private MutableComponent getDisplayName(Player player) {
+        MutableComponent playerDisplayName = player.getDisplayName().copy();
         Style style = playerDisplayName.getStyle().withColor(DefaultStyle.COLOR);
         playerDisplayName.setStyle(style);
         return playerDisplayName;

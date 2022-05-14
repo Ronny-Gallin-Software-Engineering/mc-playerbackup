@@ -3,9 +3,9 @@ package de.rgse.mc.playerbackup.service;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import de.rgse.mc.playerbackup.exceptions.NoPlayerSelectedException;
-import net.minecraft.command.CommandSource;
-import net.minecraft.command.arguments.EntitySelector;
-import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.arguments.selector.EntitySelector;
+import net.minecraft.server.level.ServerPlayer;
 
 import java.util.List;
 import java.util.Optional;
@@ -28,9 +28,9 @@ public class ArgumentService {
     private ArgumentService() {
     }
 
-    public ServerPlayerEntity getPlayer(CommandContext<CommandSource> context) throws CommandSyntaxException, NoPlayerSelectedException {
+    public ServerPlayer getPlayer(CommandContext<CommandSourceStack> context) throws CommandSyntaxException, NoPlayerSelectedException {
         EntitySelector argument = context.getArgument(PLAYER_ARGUMENT_NAME, EntitySelector.class);
-        List<ServerPlayerEntity> players = argument.findPlayers(context.getSource());
+        List<ServerPlayer> players = argument.findPlayers(context.getSource());
 
         if (players.isEmpty()) {
             throw new NoPlayerSelectedException();
@@ -40,7 +40,7 @@ public class ArgumentService {
         }
     }
 
-    public Optional<String> getBackup(CommandContext<CommandSource> context) {
+    public Optional<String> getBackup(CommandContext<CommandSourceStack> context) {
         try {
             String argument = context.getArgument(DATE_ARGUMENT_NAME, String.class);
             return Optional.of(argument);

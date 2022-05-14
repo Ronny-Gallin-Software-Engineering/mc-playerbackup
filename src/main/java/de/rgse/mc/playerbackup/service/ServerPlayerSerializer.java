@@ -3,10 +3,10 @@ package de.rgse.mc.playerbackup.service;
 import de.rgse.mc.playerbackup.exceptions.FileReadException;
 import de.rgse.mc.playerbackup.exceptions.FileWriteException;
 import de.rgse.mc.playerbackup.exceptions.NoBackupFoundException;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ServerPlayer;
 
-public class ServerPlayerSerializer extends PlayerSerializer<ServerPlayerEntity> {
+public class ServerPlayerSerializer extends PlayerSerializer<ServerPlayer> {
 
     private static ServerPlayerSerializer instance;
 
@@ -21,25 +21,25 @@ public class ServerPlayerSerializer extends PlayerSerializer<ServerPlayerEntity>
     private ServerPlayerSerializer() {
     }
 
-    public void serialize(ServerPlayerEntity player) throws FileWriteException {
+    public void serialize(ServerPlayer player) throws FileWriteException {
         String uuid = player.getStringUUID();
 
-        CompoundNBT tag = new CompoundNBT();
+        CompoundTag tag = new CompoundTag();
         player.save(tag);
         player.addAdditionalSaveData(tag);
 
         FileHandler.instance().writeFile(uuid, tag);
     }
 
-    public CompoundNBT deserialize(ServerPlayerEntity player, String backupDate) throws FileReadException {
+    public CompoundTag deserialize(ServerPlayer player, String backupDate) throws FileReadException {
         return FileHandler.instance().readFile(player.getUUID().toString(), backupDate);
     }
 
-    public CompoundNBT deserialize(ServerPlayerEntity player) throws NoBackupFoundException, FileReadException {
+    public CompoundTag deserialize(ServerPlayer player) throws NoBackupFoundException, FileReadException {
         return FileHandler.instance().readLatestFile(player.getUUID().toString());
     }
 
-    protected void deserializeNetworksideSpecific(ServerPlayerEntity player, CompoundNBT tag) {
+    protected void deserializeNetworksideSpecific(ServerPlayer player, CompoundTag tag) {
         int xpLevel = tag.getInt("XpLevel");
         int xpTotal = tag.getInt("XpTotal");
 

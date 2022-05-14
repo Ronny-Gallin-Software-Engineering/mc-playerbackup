@@ -1,20 +1,20 @@
 package de.rgse.mc.playerbackup.commands.model;
 
 import com.mojang.brigadier.context.CommandContext;
-import net.minecraft.command.CommandSource;
-import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.server.level.ServerPlayer;
 
 import java.util.function.BiFunction;
 
 public class ReflectivePlayerCommand extends AbstractPlayerCommand {
 
-    public ReflectivePlayerCommand(BiFunction<CommandContext<CommandSource>, ServerPlayerEntity, Integer> onRun) {
+    public ReflectivePlayerCommand(BiFunction<CommandContext<CommandSourceStack>, ServerPlayer, Integer> onRun) {
         super(onRun);
     }
 
-    public ServerPlayerEntity getPlayer(CommandContext<CommandSource> context) {
-        if (context.getSource().getEntity() instanceof ServerPlayerEntity) {
-            return (ServerPlayerEntity) context.getSource().getEntity();
+    public ServerPlayer getPlayer(CommandContext<CommandSourceStack> context) {
+        if (context.getSource().getEntity() instanceof ServerPlayer) {
+            return (ServerPlayer) context.getSource().getEntity();
         }
         return null;
     }

@@ -6,7 +6,7 @@ import de.rgse.mc.playerbackup.service.client.Backups;
 import de.rgse.mc.playerbackup.service.client.ClientPlayerSerializer;
 import de.rgse.mc.playerbackup.sound.SoundList;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.player.ClientPlayerEntity;
+import net.minecraft.client.player.LocalPlayer;
 
 public class ClientPlayerBackupPacketHandler {
 
@@ -18,7 +18,7 @@ public class ClientPlayerBackupPacketHandler {
     }
 
     public static void handlePlayerBackupSFXMessage() {
-        ClientPlayerEntity player = Minecraft.getInstance().player;
+        LocalPlayer player = Minecraft.getInstance().player;
         player.playSound(SoundList.RESTORE_SOUND.get(), 0.8F, 0.8F + player.level.random.nextFloat() * 0.4F);
     }
 

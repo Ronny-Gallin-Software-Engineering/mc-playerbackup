@@ -1,10 +1,10 @@
 package de.rgse.mc.playerbackup.model;
 
-import net.minecraft.util.text.Color;
+import net.minecraft.network.chat.TextColor;
 
 public class DefaultStyle {
 
-    public static final Color COLOR = Color.parseColor("#4db94b");
+    public static final TextColor COLOR = TextColor.parseColor("#4db94b");
 
     private DefaultStyle() {
     }

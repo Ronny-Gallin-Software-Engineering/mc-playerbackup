@@ -5,13 +5,13 @@ import de.rgse.mc.playerbackup.network.message.PlayerBackupSFXMessage;
 import de.rgse.mc.playerbackup.network.message.RestorePlayerMessage;
 import de.rgse.mc.playerbackup.network.message.SyncAvailableBackupsMessage;
 import de.rgse.mc.playerbackup.service.BackupService;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.network.NetworkRegistry;
-import net.minecraftforge.fml.network.PacketDistributor;
-import net.minecraftforge.fml.network.simple.SimpleChannel;
-import net.minecraftforge.fml.server.ServerLifecycleHooks;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraftforge.fmllegacy.network.NetworkRegistry;
+import net.minecraftforge.fmllegacy.network.PacketDistributor;
+import net.minecraftforge.fmllegacy.network.simple.SimpleChannel;
+import net.minecraftforge.fmllegacy.server.ServerLifecycleHooks;
 
 import java.util.List;
 import java.util.UUID;
@@ -36,15 +36,15 @@ public class PlayerBackupNetwork {
         INSTANCE.registerMessage(2, SyncAvailableBackupsMessage.class, SyncAvailableBackupsMessage::encode, SyncAvailableBackupsMessage::decode, SyncAvailableBackupsMessage::handle);
     }
 
-    public static void sendRestore(ServerPlayerEntity serverPlayer) {
-        CompoundNBT compoundNBT = new CompoundNBT();
-        serverPlayer.save(compoundNBT);
-        serverPlayer.addAdditionalSaveData(compoundNBT);
+    public static void sendRestore(ServerPlayer serverPlayer) {
+        CompoundTag compoundTag = new CompoundTag();
+        serverPlayer.save(compoundTag);
+        serverPlayer.addAdditionalSaveData(compoundTag);
 
-        INSTANCE.send(PacketDistributor.PLAYER.with(() -> serverPlayer), new RestorePlayerMessage(compoundNBT));
+        INSTANCE.send(PacketDistributor.PLAYER.with(() -> serverPlayer), new RestorePlayerMessage(compoundTag));
     }
 
-    public static void sendFX(ServerPlayerEntity serverPlayer) {
+    public static void sendFX(ServerPlayer serverPlayer) {
         INSTANCE.send(PacketDistributor.PLAYER.with(() -> serverPlayer), new PlayerBackupSFXMessage());
     }
 
@@ -54,7 +54,7 @@ public class PlayerBackupNetwork {
     }
 
     public static void sendSync(String uuid) {
-        ServerPlayerEntity player = ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayer(UUID.fromString(uuid));
+        ServerPlayer player = ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayer(UUID.fromString(uuid));
         List<String> backups = BackupService.instance().getBackups();
         INSTANCE.send(PacketDistributor.PLAYER.with(() -> player), new SyncAvailableBackupsMessage(backups));
     }

@@ -5,12 +5,13 @@ import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.brigadier.suggestion.SuggestionProvider;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import de.rgse.mc.playerbackup.service.client.Backups;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.network.play.NetworkPlayerInfo;
-import net.minecraft.command.ISuggestionProvider;
+import net.minecraft.client.multiplayer.PlayerInfo;
+import net.minecraft.commands.SharedSuggestionProvider;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -37,7 +38,7 @@ public class BackupArgumentType implements ArgumentType<String> {
         String[] s = input.split(" ");
         String userName = s[s.length - 1];
 
-        NetworkPlayerInfo playerInfo = Minecraft.getInstance().getConnection().getPlayerInfo(userName);
+        PlayerInfo playerInfo = Minecraft.getInstance().getConnection().getPlayerInfo(userName);
 
         List<String> suggestions = Collections.emptyList();
         if (playerInfo != null) {
@@ -47,7 +48,7 @@ public class BackupArgumentType implements ArgumentType<String> {
                     .collect(Collectors.toList());
         }
 
-        return ISuggestionProvider.suggest(suggestions, builder);
+        return SharedSuggestionProvider.suggest(suggestions, builder);
     }
 
     @Override

@@ -2,9 +2,8 @@ package de.rgse.mc.playerbackup.permissions;
 
 import com.google.gson.annotations.Expose;
 import de.rgse.mc.playerbackup.PlayerBackupMod;
-import net.minecraft.command.CommandSource;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.server.permission.DefaultPermissionLevel;
 import net.minecraftforge.server.permission.PermissionAPI;
 import org.apache.logging.log4j.LogManager;
@@ -85,8 +84,8 @@ public class Permissions {
         Permission() {
         }
 
-        public boolean permitted(CommandSource commandSource) {
-            return commandSource.getServer().isSingleplayer() || !(commandSource.getEntity() instanceof PlayerEntity) || PermissionAPI.hasPermission((ServerPlayerEntity) commandSource.getEntity(), PERMISSION_NODE_PREFIX + this.permissionId);
+        public boolean permitted(CommandSourceStack commandSource) {
+            return commandSource.getServer().isSingleplayer() || !(commandSource.getEntity() instanceof ServerPlayer) || PermissionAPI.hasPermission((ServerPlayer) commandSource.getEntity(), PERMISSION_NODE_PREFIX + this.permissionId);
         }
     }
 }

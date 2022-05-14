@@ -1,31 +1,31 @@
 package de.rgse.mc.playerbackup.network.message;
 
 import de.rgse.mc.playerbackup.network.client.ClientPlayerBackupPacketHandler;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraftforge.fmllegacy.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
 public class RestorePlayerMessage {
 
-    private final CompoundNBT player;
+    private final CompoundTag player;
 
-    public RestorePlayerMessage(CompoundNBT player) {
+    public RestorePlayerMessage(CompoundTag player) {
         this.player = player;
     }
 
-    public CompoundNBT getPlayer() {
+    public CompoundTag getPlayer() {
         return player;
     }
 
-    public static void encode(RestorePlayerMessage message, PacketBuffer buffer) {
+    public static void encode(RestorePlayerMessage message, FriendlyByteBuf buffer) {
         buffer.writeNbt(message.player);
     }
 
-    public static RestorePlayerMessage decode(PacketBuffer buffer) {
-        CompoundNBT compoundNBT = buffer.readNbt();
-        return new RestorePlayerMessage(compoundNBT);
+    public static RestorePlayerMessage decode(FriendlyByteBuf buffer) {
+        CompoundTag CompoundTag = buffer.readNbt();
+        return new RestorePlayerMessage(CompoundTag);
     }
 
     public static void handle(RestorePlayerMessage message, Supplier<NetworkEvent.Context> contextSupplier) {

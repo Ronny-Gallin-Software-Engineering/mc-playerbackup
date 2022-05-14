@@ -1,10 +1,10 @@
 package de.rgse.mc.playerbackup.service.client;
 
 import de.rgse.mc.playerbackup.service.PlayerSerializer;
-import net.minecraft.client.entity.player.ClientPlayerEntity;
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.nbt.CompoundTag;
 
-public class ClientPlayerSerializer extends PlayerSerializer<ClientPlayerEntity> {
+public class ClientPlayerSerializer extends PlayerSerializer<LocalPlayer> {
 
     private static ClientPlayerSerializer instance;
 
@@ -20,7 +20,7 @@ public class ClientPlayerSerializer extends PlayerSerializer<ClientPlayerEntity>
     }
 
     @Override
-    protected void deserializeNetworksideSpecific(ClientPlayerEntity player, CompoundNBT tag) {
+    protected void deserializeNetworksideSpecific(LocalPlayer player, CompoundTag tag) {
         int xpLevel = tag.getInt("XpLevel");
         int xpTotal = tag.getInt("XpTotal");
         int xpProgress = tag.getInt("XpP");

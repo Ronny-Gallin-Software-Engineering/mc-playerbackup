@@ -5,15 +5,14 @@ import de.rgse.mc.playerbackup.config.PlayerBackupConfig;
 import de.rgse.mc.playerbackup.exceptions.FileReadException;
 import de.rgse.mc.playerbackup.exceptions.FileWriteException;
 import de.rgse.mc.playerbackup.exceptions.NoBackupFoundException;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.CompressedStreamTools;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtAccounter;
 import net.minecraft.server.MinecraftServer;
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -52,7 +51,7 @@ public class FileHandler {
         new File(root).mkdirs();
     }
 
-    void writeFile(String uuid, CompoundNBT data) throws FileWriteException {
+    void writeFile(String uuid, CompoundTag data) throws FileWriteException {
 
         String name = fileNameWrapper.get(uuid);
 
@@ -60,7 +59,7 @@ public class FileHandler {
             clear(uuid);
             LOGGER.debug("creating file {}", name);
             File file = new File(name);
-            CompressedStreamTools.writeCompressed(data, file);
+            writeTag(data, file);
         } catch (Exception exception) {
             throw new FileWriteException(exception);
 
@@ -72,23 +71,23 @@ public class FileHandler {
         return list != null ? Arrays.stream(list).collect(Collectors.toList()) : Collections.emptyList();
     }
 
-    CompoundNBT readFile(String uuid, String backupDate) throws FileReadException {
+    CompoundTag readFile(String uuid, String backupDate) throws FileReadException {
         try {
             String fileName = fileNameWrapper.get(uuid, backupDate);
-            return CompressedStreamTools.readCompressed(new File(fileName));
+            return readTag(new File(fileName));
 
         } catch (Exception exception) {
             throw new FileReadException(exception);
         }
     }
 
-    CompoundNBT readLatestFile(String uuid) throws NoBackupFoundException, FileReadException {
+    CompoundTag readLatestFile(String uuid) throws NoBackupFoundException, FileReadException {
         List<String> backupFilesForUuid = getBackupTimeStamps(uuid);
         if (backupFilesForUuid.isEmpty()) {
             throw new NoBackupFoundException();
 
         } else {
-            String timestamp = backupFilesForUuid.get(backupFilesForUuid.size() - 1);
+            String timestamp = backupFilesForUuid.stream().sorted().reduce((first, second) -> second).orElse(null);
             return readFile(uuid, timestamp);
         }
     }
@@ -131,5 +130,24 @@ public class FileHandler {
         LOGGER.debug("Deleting file {}", file.getAbsolutePath());
         FileUtils.forceDelete(file);
         list.remove(0);
+    }
+
+    public void writeTag(CompoundTag tag, File file) {
+        try(FileOutputStream fileOutputStream = new FileOutputStream(file)) {
+            DataOutput dataOutput = new DataOutputStream(fileOutputStream);
+            tag.write(dataOutput);
+
+        } catch (IOException e) {
+            LOGGER.error("unable to persist compound tag to {}", file.getAbsolutePath());
+            LOGGER.error(e);
+        }
+    }
+
+    public CompoundTag readTag(File file) throws IOException {
+        try(FileInputStream fileInputStream = new FileInputStream(file)) {
+            DataInput dataInput = new DataInputStream(fileInputStream);
+            return CompoundTag.TYPE.load(dataInput, 0, NbtAccounter.UNLIMITED);
+
+        }
     }
 }

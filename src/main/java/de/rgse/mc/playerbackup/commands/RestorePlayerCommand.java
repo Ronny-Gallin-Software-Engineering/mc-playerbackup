@@ -8,30 +8,30 @@ import de.rgse.mc.playerbackup.commands.model.ReflectivePlayerCommand;
 import de.rgse.mc.playerbackup.config.PlayerBackupConfig;
 import de.rgse.mc.playerbackup.service.ArgumentService;
 import de.rgse.mc.playerbackup.service.BackupService;
-import net.minecraft.command.CommandSource;
-import net.minecraft.command.Commands;
-import net.minecraft.command.arguments.EntityArgument;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.Commands;
+import net.minecraft.commands.arguments.EntityArgument;
 
 public class RestorePlayerCommand {
 
     private RestorePlayerCommand() {
     }
 
-    public static LiteralArgumentBuilder<CommandSource> register() {
+    public static LiteralArgumentBuilder<CommandSourceStack> register() {
         return Commands.literal("restore")
                 .requires(PlayerBackupConfig.instance().getPermissions().getSelfRestore()::permitted)
                 .then(registerSubCommand())
                 .executes(new ReflectivePlayerCommand(BackupService.instance()::restorePlayer));
     }
 
-    private static ArgumentBuilder<CommandSource, ?> registerSubCommand() {
+    private static ArgumentBuilder<CommandSourceStack, ?> registerSubCommand() {
         return Commands.argument(ArgumentService.PLAYER_ARGUMENT_NAME, EntityArgument.player())
                 .requires(PlayerBackupConfig.instance().getPermissions().getRestore()::permitted)
                 .then(registerSubCommandBackupDate())
                 .executes(new ArgumentedPlayerCommand(BackupService.instance()::restorePlayer));
     }
 
-    private static ArgumentBuilder<CommandSource, ?> registerSubCommandBackupDate() {
+    private static ArgumentBuilder<CommandSourceStack, ?> registerSubCommandBackupDate() {
         return Commands.argument(ArgumentService.DATE_ARGUMENT_NAME, new BackupArgumentType())
                 .executes(new ArgumentedPlayerCommand(BackupService.instance()::restorePlayer));
     }
