@@ -1,18 +1,14 @@
 package de.rgse.mc.playerbackup.permissions;
 
 import com.google.gson.annotations.Expose;
-import de.rgse.mc.playerbackup.PlayerBackupMod;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraftforge.server.permission.DefaultPermissionLevel;
-import net.minecraftforge.server.permission.PermissionAPI;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class Permissions {
 
     private static final Logger LOGGER = LogManager.getLogger();
-    private static final String PERMISSION_NODE_PREFIX = PlayerBackupMod.MOD_ID + ".";
 
     @Expose
     private Permission selfRestore;
@@ -28,27 +24,19 @@ public class Permissions {
 
     public static Permissions createDefaultPermissions() {
         return new Permissions(
-                new Permission("self_restore", DefaultPermissionLevel.OP, "Allows the player to restore the own backup"),
-                new Permission("restore", DefaultPermissionLevel.OP, "Allows the player to restore the backup of any other player"),
-                new Permission("self_backup", DefaultPermissionLevel.ALL, "Allows the player to create a backup of it's own"),
-                new Permission("backup", DefaultPermissionLevel.OP, "Allows the player to create a backup of any other player")
+                new Permission("self_restore", PermissionLevel.OWNER, "Allows the player to restore the own backup"),
+                new Permission("restore", PermissionLevel.OWNER, "Allows the player to restore the backup of any other player"),
+                new Permission("self_backup", PermissionLevel.DEFAULT_PLAYER, "Allows the player to create a backup of it's own"),
+                new Permission("backup", PermissionLevel.OWNER, "Allows the player to create a backup of any other player")
         );
     }
+
 
     private Permissions(Permission selfRestore, Permission restore, Permission selfBackup, Permission backup) {
         this.selfRestore = selfRestore;
         this.restore = restore;
         this.selfBackup = selfBackup;
         this.backup = backup;
-    }
-
-    public void register() {
-        PermissionAPI.registerNode(PERMISSION_NODE_PREFIX +selfRestore.permissionId, selfRestore.permissionLevel, selfRestore.description);
-        PermissionAPI.registerNode(PERMISSION_NODE_PREFIX +restore.permissionId, restore.permissionLevel, restore.description);
-        PermissionAPI.registerNode(PERMISSION_NODE_PREFIX +selfBackup.permissionId, selfBackup.permissionLevel, selfBackup.description);
-        PermissionAPI.registerNode(PERMISSION_NODE_PREFIX +backup.permissionId, backup.permissionLevel, backup.description);
-
-        LOGGER.info("permissions registered");
     }
 
     public Permission getSelfRestore() {
@@ -71,21 +59,45 @@ public class Permissions {
         @Expose
         private String permissionId;
         @Expose
-        private DefaultPermissionLevel permissionLevel;
+        private int permissionLevel;
         @Expose
         private String description;
 
-        private Permission(String permissionId, DefaultPermissionLevel permissionLevel, String description) {
+        private Permission(String permissionId, PermissionLevel permissionLevel, String description) {
             this.permissionId = permissionId;
-            this.permissionLevel = permissionLevel;
+            this.permissionLevel = permissionLevel.getLevel();
             this.description = description;
         }
 
         Permission() {
         }
 
+        public String getPermissionId() {
+            return permissionId;
+        }
+
+        public int getPermissionLevel() {
+            return permissionLevel;
+        }
+
+        public String getDescription() {
+            return description;
+        }
+
+        void setPermissionId(String permissionId) {
+            this.permissionId = permissionId;
+        }
+
+        void setPermissionLevel(int permissionLevel) {
+            this.permissionLevel = permissionLevel;
+        }
+
+        void setDescription(String description) {
+            this.description = description;
+        }
+
         public boolean permitted(CommandSourceStack commandSource) {
-            return commandSource.getServer().isSingleplayer() || !(commandSource.getEntity() instanceof ServerPlayer) || PermissionAPI.hasPermission((ServerPlayer) commandSource.getEntity(), PERMISSION_NODE_PREFIX + this.permissionId);
+            return commandSource.getServer().isSingleplayer() || !(commandSource.getEntity() instanceof ServerPlayer) || commandSource.hasPermission(this.permissionLevel);
         }
     }
 }

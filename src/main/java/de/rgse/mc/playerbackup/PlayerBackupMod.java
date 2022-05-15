@@ -10,12 +10,12 @@ import net.minecraft.commands.synchronization.ArgumentTypes;
 import net.minecraft.commands.synchronization.EmptyArgumentSerializer;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.event.server.ServerStartingEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.fmlserverevents.FMLServerStartingEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -40,11 +40,12 @@ public class PlayerBackupMod {
     private void setup(final FMLCommonSetupEvent event) {
         PlayerBackupConfig.instance();
         PlayerBackupNetwork.init();
+        //PermissionEventHandler.register();
         LOGGER.info("{} successfully initialized", PlayerBackupNetwork.class.getSimpleName());
     }
 
     @SubscribeEvent
-    public void onServerStarting(FMLServerStartingEvent event) {
+    public void onServerStarting(ServerStartingEvent event) {
         FileHandler.init(event.getServer());
 
         CommandRegister.register(event.getServer().getCommands().getDispatcher());

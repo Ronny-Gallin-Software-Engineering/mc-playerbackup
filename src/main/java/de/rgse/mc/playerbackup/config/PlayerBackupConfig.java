@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.Expose;
 import de.rgse.mc.playerbackup.exceptions.FileWriteException;
+import de.rgse.mc.playerbackup.permissions.PermissionTypeAdapter;
 import de.rgse.mc.playerbackup.permissions.Permissions;
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
@@ -18,7 +19,11 @@ import java.nio.charset.StandardCharsets;
 public class PlayerBackupConfig {
 
     private static final Logger LOGGER = LogManager.getLogger();
-    private static final Gson GSON = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().setPrettyPrinting().create();
+    private static final Gson GSON = new GsonBuilder()
+            .excludeFieldsWithoutExposeAnnotation()
+            .setPrettyPrinting()
+            .registerTypeAdapter(Permissions.Permission.class, new PermissionTypeAdapter())
+            .create();
 
     private static PlayerBackupConfig instance;
     protected static final String ROOT = "config/playerbackup.json";
@@ -57,18 +62,14 @@ public class PlayerBackupConfig {
 
     private static PlayerBackupConfig readConfig() {
         try {
-            PlayerBackupConfig playerBackupConfig = GSON.fromJson(new FileReader(ROOT), PlayerBackupConfig.class);
-            playerBackupConfig.permissions.register();
-            return playerBackupConfig;
+            return GSON.fromJson(new FileReader(ROOT), PlayerBackupConfig.class);
 
         } catch (FileNotFoundException e) {
             try {
                 LOGGER.info("unable to find config file. Writing new one");
                 writeConfig();
 
-                PlayerBackupConfig playerBackupConfig = GSON.fromJson(new FileReader(ROOT), PlayerBackupConfig.class);
-                playerBackupConfig.permissions.register();
-                return playerBackupConfig;
+                return GSON.fromJson(new FileReader(ROOT), PlayerBackupConfig.class);
 
             } catch (IOException e1) {
                 LOGGER.error("unable to write config file", e1);

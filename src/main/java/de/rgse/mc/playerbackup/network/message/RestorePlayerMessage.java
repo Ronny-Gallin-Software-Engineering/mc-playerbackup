@@ -3,7 +3,7 @@ package de.rgse.mc.playerbackup.network.message;
 import de.rgse.mc.playerbackup.network.client.ClientPlayerBackupPacketHandler;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.fmllegacy.network.NetworkEvent;
+import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
