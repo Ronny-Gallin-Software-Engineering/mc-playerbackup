@@ -8,8 +8,8 @@
     "Ronny Gallin Software Engineering"
   ],
   "contact": {
-    "homepage": "https://fabricmc.net/",
-    "sources": "https://github.com/FabricMC/fabric-example-mod"
+    "homepage": "https://www.curseforge.com/minecraft/mc-mods/player-backup",
+    "sources": "https://github.com/Ronny-Gallin-Software-Engineering/mc-playerbackup"
   },
   "license": "All rights reserved",
   "icon": "assets/playerbackup/playerbackup.png",

@@ -1,6 +1,6 @@
 modLoader = "javafml"
 loaderVersion = "[36,)"
-#issueTrackerURL = ""
+issueTrackerURL = "https://github.com/Ronny-Gallin-Software-Engineering/mc-playerbackup/issues"
 license = "All rights reserved"
 
 [[mods]]
