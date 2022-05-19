@@ -1,5 +1,5 @@
 modLoader = "javafml"
-loaderVersion = "[36,)"
+loaderVersion = "[40,)"
 issueTrackerURL = "https://github.com/Ronny-Gallin-Software-Engineering/mc-playerbackup/issues"
 license = "All rights reserved"
 
@@ -17,20 +17,20 @@ logoFile = "assets/playerbackup/playerbackup.png"
 [[dependencies.playerbackup]]
 modId = "forge"
 mandatory = true
-versionRange = "[36,)"
+versionRange = "[40,)"
 ordering = "NONE"
 side = "BOTH"
 
 [[dependencies.playerbackup]]
 modId = "minecraft"
 mandatory = true
-versionRange = "[1.16.5,)"
+versionRange = "[1.18.1,)"
 ordering = "NONE"
 side = "BOTH"
 
 [[dependencies.playerbackup]]
 modId = "architectury"
 mandatory = true
-versionRange = "[1.31.61,)"
+versionRange = "[4.4.59,)"
 ordering = "AFTER"
 side = "BOTH"
