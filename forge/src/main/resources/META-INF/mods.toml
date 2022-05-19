@@ -1,0 +1,36 @@
+modLoader = "javafml"
+loaderVersion = "[36,)"
+#issueTrackerURL = ""
+license = "All rights reserved"
+
+[[mods]]
+modId = "playerbackup"
+version = "${version}"
+displayName = "Player Backup"
+authors = "Ronny Gallin Software Engineering"
+description = '''
+This Mod gives you the ability to create backups of players inventory as well as restoring them.
+For the documentation see: https://github.com/Ronny-Gallin-Software-Engineering/mc-playerbackup/blob/master/README.md
+'''
+logoFile = "assets/playerbackup/playerbackup.png"
+
+[[dependencies.playerbackup]]
+modId = "forge"
+mandatory = true
+versionRange = "[36,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.playerbackup]]
+modId = "minecraft"
+mandatory = true
+versionRange = "[1.16.5,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.playerbackup]]
+modId = "architectury"
+mandatory = true
+versionRange = "[1.31.61,)"
+ordering = "AFTER"
+side = "BOTH"

@@ -1,6 +1,10 @@
-![Mod Logo](src/main/resources/playerbackup_250.png)
+![Mod Logo](common/src/main/resources/assets/playerbackup/playerbackup_250.png)
 
 # Player Backup
+
+![Drag Racing](https://media.forgecdn.net/avatars/thumbnails/313/420/64/64/637408811378175814.png)
+
+Since Version 1.3.0 This Mod requires [Architectury API](https://www.curseforge.com/minecraft/mc-mods/architectury-api) 
 
 ## TL;DR
 

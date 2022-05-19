@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "mc-playerbackup",
+  "version": "${version}",
+  "name": "Player Backup",
+  "description": "This Mod gives you the ability to create backups of players inventory as well as restoring them.\nFor the documentation see: https://github.com/Ronny-Gallin-Software-Engineering/mc-playerbackup/blob/master/README.md",
+  "authors": [
+    "Ronny Gallin Software Engineering"
+  ],
+  "contact": {
+    "homepage": "https://fabricmc.net/",
+    "sources": "https://github.com/FabricMC/fabric-example-mod"
+  },
+  "license": "All rights reserved",
+  "icon": "assets/playerbackup/playerbackup.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "de.rgse.mc.playerbackup.fabric.PlayerBackupModFabric"
+    ]
+  },
+  "depends": {
+    "fabric": "*",
+    "minecraft": ">=1.16.5",
+    "architectury": ">=1.31.61"
+  }
+}
