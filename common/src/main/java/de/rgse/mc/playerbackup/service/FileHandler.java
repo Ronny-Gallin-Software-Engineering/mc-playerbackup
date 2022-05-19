@@ -68,7 +68,7 @@ public class FileHandler {
 
     List<String> getBackups() {
         String[] list = new File(fileNameWrapper.getRoot()).list();
-        return list != null ? Arrays.stream(list).collect(Collectors.toList()) : Collections.emptyList();
+        return list != null ? Arrays.asList(list) : Collections.emptyList();
     }
 
     CompoundTag readFile(String uuid, String backupDate) throws FileReadException {
@@ -115,7 +115,7 @@ public class FileHandler {
         int backupCountPerPlayer = PlayerBackupConfig.instance().getBackupCountPerPlayer();
 
         String[] list = new File(fileNameWrapper.getRoot()).list();
-        List<String> files = list != null ? Arrays.stream(list).filter(name -> name.startsWith(uuid)).sorted().collect(Collectors.toList()) : Collections.emptyList();
+        List<String> files = list != null ? Arrays.stream(list).filter(name -> name.startsWith(uuid)).sorted().toList() : Collections.emptyList();
 
         if (backupCountPerPlayer > 0) {
             while (files.size() >= backupCountPerPlayer) {

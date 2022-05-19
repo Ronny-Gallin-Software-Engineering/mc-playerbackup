@@ -13,8 +13,8 @@ public class ReflectivePlayerCommand extends AbstractPlayerCommand {
     }
 
     public ServerPlayer getPlayer(CommandContext<CommandSourceStack> context) {
-        if (context.getSource().getEntity() instanceof ServerPlayer) {
-            return (ServerPlayer) context.getSource().getEntity();
+        if (context.getSource().getEntity() instanceof ServerPlayer serverPlayer) {
+            return serverPlayer;
         }
         return null;
     }

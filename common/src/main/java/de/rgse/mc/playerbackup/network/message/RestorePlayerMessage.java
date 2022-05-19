@@ -1,19 +1,13 @@
 package de.rgse.mc.playerbackup.network.message;
 
 import de.rgse.mc.playerbackup.network.client.ClientPlayerBackupPacketHandler;
-import me.shedaniel.architectury.networking.NetworkManager;
+import dev.architectury.networking.NetworkManager;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 
 import java.util.function.Supplier;
 
-public class RestorePlayerMessage {
-
-    private final CompoundTag player;
-
-    public RestorePlayerMessage(CompoundTag player) {
-        this.player = player;
-    }
+public record RestorePlayerMessage(CompoundTag player) {
 
     public CompoundTag getPlayer() {
         return player;

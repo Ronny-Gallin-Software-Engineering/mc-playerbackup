@@ -17,7 +17,7 @@ public abstract class PlayerSerializer<T extends Player> {
         int health = tag.getInt("Health");
 
         assert inventory != null;
-        player.inventory.load(inventory);
+        player.getInventory().load(inventory);
         player.setHealth(health);
 
         deserializeNetworksideSpecific(player, tag);

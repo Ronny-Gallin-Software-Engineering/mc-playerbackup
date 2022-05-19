@@ -6,7 +6,7 @@ import de.rgse.mc.playerbackup.network.message.RestorePlayerMessage;
 import de.rgse.mc.playerbackup.network.message.SyncAvailableBackupsMessage;
 import de.rgse.mc.playerbackup.service.BackupService;
 import de.rgse.mc.playerbackup.service.PlayerList;
-import me.shedaniel.architectury.networking.NetworkChannel;
+import dev.architectury.networking.NetworkChannel;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;

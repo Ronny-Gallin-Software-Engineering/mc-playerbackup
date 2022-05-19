@@ -1,7 +1,7 @@
 package de.rgse.mc.playerbackup.service;
 
 import de.rgse.mc.playerbackup.network.PlayerBackupNetwork;
-import me.shedaniel.architectury.event.events.PlayerEvent;
+import dev.architectury.event.events.common.PlayerEvent;
 import net.minecraft.server.level.ServerPlayer;
 
 import java.util.Collection;

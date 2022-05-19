@@ -7,7 +7,7 @@ import de.rgse.mc.playerbackup.network.PlayerBackupNetwork;
 import de.rgse.mc.playerbackup.service.FileHandler;
 import de.rgse.mc.playerbackup.service.PlayerList;
 import de.rgse.mc.playerbackup.sound.Sounds;
-import me.shedaniel.architectury.event.events.LifecycleEvent;
+import dev.architectury.event.events.common.LifecycleEvent;
 import net.minecraft.commands.synchronization.ArgumentTypes;
 import net.minecraft.commands.synchronization.EmptyArgumentSerializer;
 import org.apache.logging.log4j.LogManager;

@@ -1,7 +1,7 @@
 package de.rgse.mc.playerbackup.network.message;
 
 import de.rgse.mc.playerbackup.network.client.ClientPlayerBackupPacketHandler;
-import me.shedaniel.architectury.networking.NetworkManager;
+import dev.architectury.networking.NetworkManager;
 
 import java.util.function.Supplier;
 
